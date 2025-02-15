@@ -1,0 +1,192 @@
+/* Estilo general del host */
+:host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    width: 100vw; /* Ocupa todo el ancho de la ventana */
+    background-color: #e9e7e7; /* Fondo gris claro */
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+
+/* Contenedor principal del formulario */
+.login-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center; /* Asegura que los elementos estén centrados verticalmente */
+    justify-content: center; /* Centra el contenido */
+    height: auto;
+    width: 90vw;
+    max-width: 900px; /* Ancho máximo */
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(167, 18, 18, 0.1);
+    overflow: hidden;
+    background-color: #ffffff; /* Fondo blanco */
+    padding: 20px;
+}
+
+/* Panel izquierdo (imagen) */
+.left-panel {
+    flex: 1; /* Toma 50% del espacio disponible */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 20px;
+}
+
+.rocket {
+    width: 100%;
+    height: auto;
+    object-fit: cover; /* Ajusta la imagen al contenedor sin recortarla */
+    border-radius: 10px;
+}
+
+/* Panel derecho (formulario) */
+.right-panel {
+    flex: 1; /* Toma 50% del espacio disponible */
+    padding: 30px;
+    text-align: left; /* Alinea el texto al inicio */
+}
+
+/* Estilos del título */
+h1 {
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #000000; /* Color negro */
+    text-align: center; /* Centrado solo el título */
+}
+
+/* Organización de los campos */
+.form-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.mb-3 {
+    margin-bottom: 20px; /* Espaciado uniforme entre campos */
+}
+
+/* Estilos de los inputs */
+.form-control {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* Incluye padding y borde en el ancho */
+}
+
+/* Estilo del checkbox */
+.form-check-label {
+    font-size: 0.9em;
+    color: #333;
+}
+
+.form-check-input {
+    margin-right: 5px;
+}
+
+/* Botón de inicio de sesión */
+.custom-button {
+    background-color: rgb(22, 0, 102);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 12px;
+    font-size: 1em;
+    font-weight: bold;
+    width: 100%; /* Ocupa todo el ancho */
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+.custom-button:hover {
+    transform: translateY(-2px); /* Efecto de levantar el botón */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Sombra más marcada */
+}
+
+.custom-button:active {
+    transform: translateY(0);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Reduce la sombra */
+}
+
+/* Enlaces */
+.link-black {
+    display: block;
+    margin-top: 10px;
+    color: rgb(22, 0, 102); /* Azul oscuro */
+    font-size: 0.9em;
+    text-decoration: none;
+}
+
+.link-black:hover {
+    color: rgb(80, 80, 78); /* Gris oscuro */
+    text-decoration: underline;
+}
+
+/* Media Queries para dispositivos pequeños (móviles) */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column; /* Apila los paneles verticalmente */
+        width: 95vw;
+        height: auto;
+        padding: 20px;
+    }
+
+    .left-panel {
+        display: none; /* Oculta el panel izquierdo en pantallas pequeñas */
+    }
+
+    .right-panel {
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 24px; /* Tamaño reducido */
+    }
+
+    .custom-button {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    .form-control {
+        padding: 8px;
+        font-size: 0.9em;
+    }
+}
+
+/* Media Queries para pantallas medianas (tabletas) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .login-container {
+        flex-direction: row;
+        width: 85vw;
+    }
+
+    .left-panel, .right-panel {
+        flex: 1;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    .custom-button {
+        padding: 10px 18px;
+        font-size: 0.95em;
+    }
+}

@@ -1,0 +1,145 @@
+<div class="container">
+  <h2 class="title">Lista de Trabajadores</h2>
+
+  <!-- Barra de búsqueda y botón de nuevo trabajador -->
+  <div class="toolbar">
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Buscar por nombre o usuario"
+      [(ngModel)]="searchTerm"
+    />
+    <button class="btn new-user-btn" (click)="openNewUsersForm()">+ Nuevo Trabajador</button>
+  </div>
+
+  <!-- Tabla de trabajadores -->
+  <div class="table-container">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Usuario</th>
+          <th>Rol</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let worker of filteredUsers(); let i = index">
+          <td>{{ worker.id }}</td>
+          <td>{{ worker.firstname }}</td>
+          <td>{{ worker.lastname }}</td>
+          <td>{{ worker.username}}</td>
+          <td>{{ worker.role}}</td>
+          <td>
+            <i 
+            class="fas fa-edit" 
+            (click)="editUser(worker)" 
+            style="cursor: pointer; margin-right: 20px; color: #2162a7">
+          </i>
+          <i 
+            class="fas fa-trash-alt" 
+            (click)="deleteUser(worker)" 
+            style="cursor: pointer; color: #2162a7;">
+          </i>
+          
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para agregar/editar trabajador -->
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{ isEditing ? 'Editar Trabajador' : 'Agregar Trabajador' }}</h3>
+        <button class="close-btn" (click)="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <!-- Campo Nombre -->
+          <div class="form-row">
+            <input
+              type="text"
+              placeholder="Nombre"
+              [(ngModel)]="currentUser.firstname"
+              name="name"
+              required
+            />
+          </div>
+          <!-- Campo Apellido -->
+          <div class="form-row">
+            <input
+              type="text"
+              placeholder="Apellido"
+              [(ngModel)]="currentUser.lastname"
+              name="lastname"
+              required
+            />
+          </div>
+
+          <!-- Campo Usuario -->
+          <div class="form-row">
+            <input
+              type="text"
+              placeholder="Nombre de Usuario"
+              [(ngModel)]="currentUser.username"
+              name="username"
+              required
+            />
+          </div>
+
+          <!-- Campo Contraseña -->
+          <div class="form-row">
+            <input
+              type="password"
+              placeholder="Desea cambiar la Contraseña"
+              [(ngModel)]="currentUser.password"
+              name="password"
+              required
+            />
+          </div>
+
+          <!-- Campo Cargo -->
+          <div class="form-row">
+            <select 
+              id="role"
+              [(ngModel)]="role" 
+              name="position" 
+              required
+            >
+              <option value="" disabled selected>Seleccionar rol</option>
+              <option value="admin">ADMIN</option>
+              <option value="user">USER</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn cancel-btn" (click)="closeModal()">Cancelar</button>
+        <button class="btn save-btn" (click)="register()">
+          {{ isEditing ? 'Guardar Cambios' : 'Agregar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de eliminación -->
+  <div class="modal" *ngIf="showDeleteModal">
+    <div class="modal-content delete-confirmation">
+      <div class="modal-header">
+        <h3>Confirmar Eliminación</h3>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de eliminar este trabajador?</p>
+        <p class="user-info">{{ userToDelete?.firstname }} {{ userToDelete?.lastname }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn cancel-btn" (click)="cancelDelete()">Cancelar</button>
+        <button class="btn delete-btn" (click)="confirmDelete()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>

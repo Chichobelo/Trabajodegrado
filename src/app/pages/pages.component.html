@@ -1,0 +1,32 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<h2>Registro de Producción</h2>
+<div class="filter-container">
+  <input type="text" class="search-bar" placeholder="Buscar..." [(ngModel)]="searchText" (input)="filterPackings()" />
+  <input type="date" class="date-filter" [(ngModel)]="startDate" (change)="filterPackings()" placeholder="Fecha de inicio" />
+  <input type="date" class="date-filter" [(ngModel)]="endDate" (change)="filterPackings()" placeholder="Fecha de fin" />
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Catidad</th>
+      <th>Tipo de Empaque</th>
+      <th>Fecha de Creación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let packing of paginatedPackings">
+      <td>{{ packing.idpacking }}</td>
+      <td>{{ packing.name }}</td>
+      <td>{{ packing.quantity }}</td>
+      <td>{{ packing.packagingTypeId.name }}</td>
+      <td>{{ packing.creationDate | date }}</td>
+    </tr>
+  </tbody>
+</table>
+<div class="pagination-controls">
+  <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+  <button (click)="nextPage()" [disabled]="currentPage === totalPages">Siguiente</button>
+</div>

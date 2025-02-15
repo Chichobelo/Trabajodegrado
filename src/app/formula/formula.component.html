@@ -1,0 +1,159 @@
+<!-- formula.component.html -->
+<div class="container">
+  <!-- Barra de búsqueda -->
+  <div class="header">
+    <h2>Lista de Fórmulas</h2>
+    <div class="search-container">
+      <input
+        type="text"
+        class="form-control search-bar"
+        placeholder="Buscar fórmula..."
+        [(ngModel)]="busqueda"
+      />
+      <button class="btn-new-component" (click)="abrirModal()">+ Nueva Fórmula</button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="acciones">Producto</th>
+          <th class="acciones">Ingrediente</th>
+          <th class="acciones">Cantidad</th>
+          <th class="acciones">Unidad</th>
+          <th class="acciones">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="acciones" *ngFor="let formula of formulasPaginadas">
+          <td>{{ formula.nameProducto }}</td>
+          <td>
+            <ul>
+              <li class="acciones" *ngFor="let ingrediente of formula.ingredientes">
+                {{ ingrediente.name }}
+              </li>
+            </ul>
+          </td>
+          <td>
+            <ul>
+              <li class="acciones" *ngFor="let ingrediente of formula.ingredientes">
+                {{ ingrediente.cantidad }}
+              </li>
+            </ul>
+          </td>
+          <td>
+            <ul>
+              <li class="acciones" *ngFor="let ingrediente of formula.ingredientes">
+                {{ ingrediente.unidad }}
+              </li>
+            </ul>
+          </td>
+          <td class="acciones">
+            <i 
+              class="fas fa-edit text-primary" 
+              (click)="editarFormula(formula)" 
+              style="cursor: pointer; margin-right: 20px; color: #2162a7;">
+            </i>
+            <i 
+              class="fas fa-trash-alt text-primary" 
+              (click)="eliminarFormula(formula)" 
+              style="cursor: pointer; color: #2162a7;">
+            </i>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="pagination-controls">
+    <button (click)="irAFormulaAnterior()" [disabled]="currentFormulaIndex === 0">Anterior</button>
+    <button class="over" (click)="irAFormulaSiguiente()" [disabled]="currentFormulaIndex === totalPages - 1">Siguiente</button>
+  </div>
+  
+
+  <!-- Modal de Creación/Edición -->
+  <div class="modal" [class.open]="isModalOpen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{ editingFormulaIndex !== null ? 'Editar' : 'Crear' }} Fórmula</h3>
+        <button class="close" (click)="cerrarModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="producto">Seleccionar Producto</label>
+          <select id="producto" class="form-control" [(ngModel)]="selectedProducto">
+            <option [value]="null" disabled>Selecciona un producto</option>
+            <option *ngFor="let prod of producto" [value]="prod.idproduct">
+              {{ prod.name }}
+            </option>
+          </select>
+        </div>
+        <h4>Ingredientes</h4>
+        <div class="ingredientes-container" [class.scrollable]="ingredientes.length > 2">
+          <table class="table">
+            <tr *ngFor="let ingrediente of ingredientes; let j = index">
+              <td>
+                <select class="form-control" [(ngModel)]="ingrediente.nombre">
+                  <option [value]="null" disabled>Selecciona un componente</option>
+                  <option *ngFor="let componente of componentes" [value]="componente.idcomponent">
+                    {{ componente.name }}
+                  </option>
+                </select>
+              </td>
+              <td>
+                <input
+                  class="form-control"
+                  placeholder="Cantidad"
+                  [(ngModel)]="ingrediente.cantidad"
+                />
+              </td>
+              <td>
+                <select class="form-control" [(ngModel)]="ingrediente.unidad">
+                  <option value="" disabled selected>Unidad de medida</option>
+                  <option value="GR">gramos</option>
+                  <option value="ML">Miligramos</option>
+                  <option value="KG">kilos</option>
+                  <option value="LIT">litros</option>
+                </select>
+              </td>
+              <td>
+                <button class="btn btn-danger btn-sm" (click)="eliminarIngrediente(j)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          </table>
+        </div>
+        
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="agregarIngrediente()">
+            + Agregar Ingrediente
+          </button>
+          <button class="btn btn-primary" (click)="guardarFormula()">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmación de Eliminación -->
+  <div class="modal" [class.open]="isDeleteModalOpen">
+    <div class="modal-content">
+      <div class="modal-header">
+        Confirmar eliminación
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar el componente <span class="component-name">"{{ formulaToDelete?.nameProducto }}"</span>?</p>
+        <p class="warning-text">Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cancel" (click)="cerrarModalEliminar()">Cancelar</button>
+        <button class="btn btn-delete" (click)="confirmarEliminacion()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>

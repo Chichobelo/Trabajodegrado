@@ -1,0 +1,436 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f5f7fa;
+  margin: 0;
+  padding: 20px;
+}
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-eliminar {
+  background-color: #2162a7;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-eliminar:disabled {
+  background-color: #a9a9a9;
+  cursor: not-allowed;
+}
+
+.btn-eliminar:hover {
+  background-color: #184d76;
+}
+
+
+
+.container {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Títulos */
+h2, h3 {
+  text-align: center;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.btn-new-component {
+  background-color: #2162a7;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 14px;
+}
+
+/* Efecto de hover en el botón */
+.btn-new-component:hover {
+  transform: scale(1.05);
+}
+
+.btn-new-component:active {
+  transform: scale(0.98);
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #2162a7;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.btn-secondary {
+  background-color: #c82333;
+  color: white;
+  padding: 8px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #bd2130;
+}
+
+.btn-success {
+  background-color: #13963f;
+  color: white;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-success:hover {
+  background-color: #107a33;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(19, 150, 63, 0.3);
+}
+
+/* Contenedor flexible para la barra de búsqueda y el botón */
+/* Contenedor flexible para la barra de búsqueda y el botón */
+.search-and-button {
+  display: flex; /* Activar diseño flexible */
+  align-items: center; /* Alinear elementos verticalmente */
+  justify-content: space-between; /* Separar barra y botón */
+  gap: 20px; /* Espacio entre la barra de búsqueda y el botón */
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* Permitir que los elementos se muevan a la siguiente línea cuando sea necesario */
+}
+
+/* Barra de búsqueda */
+.search-bar {
+  flex: 1; /* Ocupa todo el ancho restante */
+  max-width: 500px; /* Limitar el ancho máximo */
+  padding: 12px 16px;
+  border: 2px solid #ddd;
+  border-radius: 50px;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.search-bar:focus {
+  box-shadow: 0 0 5px rgba(33, 98, 167, 0.4);
+}
+
+/* Botón "Crear nuevo producto" */
+.btn-new-component {
+  background-color: #2162a7;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-new-component:hover {
+  transform: scale(1.05);
+  background-color: #184d7e;
+}
+
+.btn-new-component:active {
+  transform: scale(0.98);
+}
+
+/* Responsivo para pantallas más pequeñas */
+@media (max-width: 768px) {
+  .search-and-button {
+    justify-content: flex-start; /* Alinear la barra y el botón hacia la izquierda */
+  }
+
+  .search-bar {
+    width: 100%; /* La barra de búsqueda ocupa el 100% del ancho */
+    margin-bottom: 10px; /* Añadir un poco de espacio debajo */
+  }
+
+  .btn-new-component {
+    width: 100%; /* El botón ocupa el 100% del ancho disponible */
+    font-size: 16px; /* Ajustar el tamaño del texto para pantallas pequeñas */
+  }
+}
+
+@media (max-width: 576px) {
+  .table th, .table td {
+    padding: 8px;
+  }
+
+  .search-bar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .btn-new-component {
+    width: 100%;
+    font-size: 16px;
+  }
+}
+
+/* Contenedor con scroll para la tabla */
+.table-container {
+  max-height: 400px; /* Ajusta la altura máxima según el espacio disponible */
+  overflow-y: auto;  /* Permite el scroll vertical si el contenido excede la altura */
+  overflow-x: auto;  /* Permite el scroll horizontal si la tabla es más ancha que el contenedor */
+  margin-bottom: 20px;
+  width: 100%; /* Asegúrate de que el contenedor ocupe el 100% del ancho disponible */
+  display: block; /* Asegúrate de que el contenedor sea un bloque y no esté afectado por propiedades en línea */
+}
+
+/* Tabla */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  min-width: 600px; /* Asegura que la tabla tenga un ancho mínimo */
+}
+
+.table thead {
+  background-color: #2162a7;
+  color: white;
+  text-transform: uppercase;
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  text-align: left;
+}
+
+.table tbody tr:nth-child(odd) {
+  background-color: #f8f9fa;
+}
+
+.table tbody tr:hover {
+  background-color: #e9ecef;
+}
+
+
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  padding: 20px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h5 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.modal-footer .btn {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.modal-footer .btn-secundario {
+  background-color: #c82333;
+}
+
+/* Estilo común para los botones */
+.btn {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s ease-in-out;
+  margin-right: 10px; /* Espacio entre botones */
+}
+
+/* Botón Editar */
+.btn-info {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-info:hover {
+  background-color: #28a745;
+}
+
+.btn-info:active {
+  transform: scale(0.98);
+}
+
+/* Botón Eliminar */
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.btn-danger:active {
+  transform: scale(0.98);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .btn {
+    font-size: 12px; /* Tamaño de texto más pequeño */
+    padding: 5px 10px; /* Menos padding en pantallas más pequeñas */
+  }
+
+  /* Si los botones deben ocupar todo el ancho en pantallas más pequeñas */
+  .btn-info, .btn-danger {
+    width: 100%; /* Los botones ocupan el 100% del ancho del contenedor */
+    margin-right: 0; /* Elimina el margen entre los botones */
+    margin-bottom: 10px; /* Añade espacio entre botones en pantallas pequeñas */
+  }
+}
+
+.modal-footer .btn-secundario:hover {
+  background-color: #bd2130;
+}
+
+/* Botones de editar y eliminar */
+.btn-edit {
+  background-color: #ffc107;
+  color: white;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 90%;
+    padding: 15px;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .search-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-bar {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .btn-new-component {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .table th, .table td {
+    padding: 8px;
+  }
+
+  .search-bar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .btn-new-component {
+    width: 100%;
+    font-size: 16px;
+  }
+}

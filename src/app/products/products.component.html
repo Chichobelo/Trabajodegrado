@@ -1,0 +1,104 @@
+<div class="container">
+  <h1 class="title text-center my-4">Productos Creados</h1>
+  <div class="row">
+    <!-- Tarjetas de productos -->
+    <div class="col-6 col-md-4 col-lg-3 mb-4" *ngFor="let product of formulas">
+      <div class="card text-center h-100">
+        <img [src]="'http://localhost:8080/documents/'+product.urlImagen" class="card-img-top" [alt]="product.nameProducto" />
+        <div class="card-body">
+          <h5 class="card-title">{{ product.nameProducto }}</h5>
+          <button class="btn btn-info btn-sm mb-2" (click)="viewFormula(product)">Ver Fórmula</button>
+          <button class="btn btn-primary btn-sm" (click)="selectProduct(product)">Empacar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div *ngIf="viewFormulaProduct.producto !== 0" class="modal active">
+  <div class="modal-content">
+    <button class="close-btn" (click)="closeFormula()">&times;</button>
+    <h4 class="text-center mb-4">Fórmula - {{ viewFormulaProduct.nameProducto }}</h4>
+    <div class="table-container" [class.scrollable]="viewFormulaProduct.ingredientes.length > 6">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Componente</th>
+            <th>Cantidad</th>
+            <th>Unidad de medida</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let component of viewFormulaProduct.ingredientes">
+            <td>{{ component.name }}</td>
+            <td>{{ component.cantidad }}</td>
+            <td>{{ component.unidad }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para Empacar -->
+<div *ngIf="selectedProduct.name!==''" class="modal active">
+  <div class="modal-content">
+    <button class="close-btn" (click)="closePacking()">&times;</button>
+    <h4 class="text-center mb-4">Registrar Producción - {{ selectedProduct.name }}</h4>
+    <div class="form-container">
+      <form>
+        <div>
+          <h5 class="mt-4">Selección de Empaques</h5>
+          <div *ngFor="let pack of packages; let i = index" class="package-row">
+            <div class="form-group">
+              <label for="packageType{{ i }}">Tipo de Empaque</label>
+              <select 
+                id="selectPackagingtype" 
+                class="form-control" 
+                [(ngModel)]="packages[i].packagingTypeId.idpackagingType" 
+                [ngModelOptions]="{standalone: true}"
+              >
+                <option [value]="null" disabled>Selecciona un tipo de empaque</option>
+                <option *ngFor="let packagingtype of packagingtypes" [value]="packagingtype.idpackagingType">
+                  {{ packagingtype.name }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="quantity{{ i }}">Cantidad</label>
+              <input
+                [(ngModel)]="packages[i].quantity"
+                [name]="'quantity' + i"
+                id="quantity{{ i }}"
+                type="number"
+                class="form-control"
+                placeholder="Ingrese cantidad"
+                min="1"
+                required
+              />
+            </div>
+            <button type="button" class="btn btn-danger btn-sm" (click)="removePackage(i)">
+              Eliminar
+            </button>
+          </div>
+          <div class="button-container">
+            <button type="button" class="btn btn-secondary btn-sm" (click)="addPackage()">
+              Agregar Empaque
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Botones del modal -->
+    <div class="form-buttons mt-4">
+      <button type="button" class="btn btn-success" (click)="registerProduction()">Registrar Producción</button>
+      <button type="button" class="btn btn-danger" (click)="closePacking()">Cerrar</button>
+    </div>
+  </div>
+
+
+<!-- ...existing code... -->
+</div>

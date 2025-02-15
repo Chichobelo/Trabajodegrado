@@ -1,0 +1,11 @@
+<div class="logout-card">
+  <h2>Cerrar Sesión</h2>
+  <div class="user-avatar">
+    <img src="https://cdn-icons-png.flaticon.com/512/6326/6326055.png" alt="user-avatar" />
+  </div>
+  <h4>{{ username || 'Usuario' }}</h4> <!-- Muestra el nombre de usuario o "Usuario" si no está disponible -->
+  <p>¿Estás seguro que deseas cerrar sesión?</p>
+  <button (click)="logout()" class="btn">
+    <i class="fal fa-sign-out-alt"></i> Cerrar Sesión
+  </button>
+</div>

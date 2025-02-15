@@ -1,0 +1,130 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f7fc;
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.filter-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+/* Estilos de los Inputs */
+.search-bar, .date-filter {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #dcdcdc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  transition: border-color 0.3s ease;
+}
+
+.search-bar:focus, .date-filter:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Personalización de calendario para los inputs de fecha */
+.date-filter {
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+}
+
+.date-filter::-webkit-calendar-picker-indicator {
+  background-color: #2162a7;
+  border-radius: 50%;
+  padding: 5px;
+  color: white;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.date-filter::-webkit-calendar-picker-indicator:hover {
+  background-color: #0056b3;
+}
+
+/* Estilo de la Tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  color: #555;
+}
+
+th {
+  background-color: #0056b3;
+  color: white;
+  font-weight: 500;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Estilo para los Botones de Paginación */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.pagination-controls button {
+  padding: 10px 20px;
+  font-size: 14px;
+  color: white;
+  background-color: #0056b3;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.pagination-controls button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.pagination-controls button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Ajustes Responsivos */
+@media (max-width: 768px) {
+  .filter-container {
+    flex-direction: column;
+  }
+
+  .pagination-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search-bar, .date-filter {
+    width: 100%;
+  }
+}

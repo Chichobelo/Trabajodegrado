@@ -1,0 +1,64 @@
+.logout-card {
+    max-width: 300px;
+    margin: 50px auto;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .logout-card h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  
+  
+  .user-avatar {
+    margin: 10px 0;
+  }
+  
+  .user-avatar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #f5f5f5;
+  }
+  
+  .logout-card h4 {
+    margin: 10px 0;
+    font-size: 18px;
+    font-weight: normal;
+  }
+  
+  .logout-card p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .btn {
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    background-color: #dc3545; /* Rojo Bootstrap */
+    color: #fff; /* Texto blanco */
+    border: none; /* Sin bordes */
+    transition: background-color 0.3s ease; /* Animación al pasar el ratón */
+  }
+  
+  .btn:hover {
+    background-color: #c82333; /* Rojo más oscuro para hover */
+  }
+  
+  .btn i {
+    margin-right: 5px;
+  }
+  
+  

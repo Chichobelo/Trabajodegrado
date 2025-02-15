@@ -1,0 +1,179 @@
+<div class="container inventory-management">
+  <div class="inventory-header">
+    <h1>Lista de componentes</h1>
+  </div>
+  <div class="search-container">
+    <div class="search-input-container">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="filterData()"
+        placeholder="Buscar por nombre..."
+        class="search-input"
+      />
+    </div>
+    <button class="btn-new-component" (click)="openCreateModal()"> + Crear nuevo componente</button>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre del Químico</th>
+          <th>Stock Actual</th>
+          <th>Unidad</th>
+          <th>Stock Mínimo</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="acciones" *ngFor="let item of paginatedComponents">
+          <td>{{ item.name }}</td>
+          <td>{{ item.currentStock }}</td>
+          <td>{{ item.unitOfMeasurement }}</td>
+          <td>{{ item.minimumStock }}</td>
+          <td class="status">
+            <span [ngClass]="getStatusColor(getStockStatus(item.currentStock, item.minimumStock))">
+              {{ getStockStatus(item.currentStock, item.minimumStock) | titlecase }}
+            </span>
+          </td>
+          <td>
+            <i 
+            class="fas fa-edit" 
+            (click)="editStock(item)" 
+            style="cursor: pointer; margin-right: 20px; color: #2162a7;">
+          </i>
+          <i 
+            class="fas fa-trash-alt" 
+            (click)="deleteStockProduct(item)" 
+            style="cursor: pointer; color: #2162a7;">
+          </i>
+          
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="pagination-container mt-3" *ngIf="totalPages > 1">
+      <button class="btn-eliminar" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+        Anterior
+      </button>
+      <button class="btn-eliminar" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+        Siguiente
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal para editar un químico -->
+  <div *ngIf="selectedItem.name!== ''" class="modal">
+    <div class="modal-content">
+      <h2>Actualizar Inventario</h2>
+      <div class="form-group">
+        <label for="edit-name">Nombre del Componente</label>
+        <input
+          type="text"
+          [(ngModel)]="selectedItem.name"
+          id="edit-name"
+          placeholder="Ejemplo: T1"
+        />
+      </div>
+      <div class="form-group">
+        <label for="edit-unit">Unidad</label>
+        <select
+          id="edit-unit"
+          [(ngModel)]="selectedItem.unitOfMeasurement"
+          class="form-control"
+        >
+          <option value="" disabled selected>Selecciona una unidad</option>
+          <option value="KG">Kilogramos </option>
+          <option value="LIT">Litros</option>
+          <option value="GR">Gramos</option>
+          <option value="MG">Miligramos</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="edit-stock">Stock Actual</label>
+        <input
+          type="number"
+          [(ngModel)]="selectedItem.currentStock"
+          id="edit-stock"
+          placeholder="Ejemplo: 100"
+        />
+      </div>
+      <div class="form-group">
+        <label for="edit-minStock">Stock Mínimo</label>
+        <input
+          type="number"
+          [(ngModel)]="selectedItem.minimumStock"
+          id="edit-minStock"
+          placeholder="Ejemplo: 10"
+        />
+      </div>
+      <div class="form-actions">
+        <button class="btn-save" (click)="updateStockProduct()">Guardar</button>
+        <button class="btn-cancel" (click)="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para crear un nuevo químico -->
+  <div *ngIf="showCreateModal" class="modal">
+    <div class="modal-content">
+      <h2>Crear Químico</h2>
+      <div class="form-group">
+        <label for="new-name">Nombre del componente</label>
+        <input
+          type="text"
+          id="new-name"
+          [(ngModel)]="stock.name"
+          placeholder="Ejemplo: R6"
+        />
+      </div>
+      <div class="form-group">
+        <label for="new-unit">Unidad</label>
+        <select
+          id="new-unit"
+          [(ngModel)]="stock.unitOfMeasurement"
+          class="form-control"
+        >
+          <option value="" disabled selected>Selecciona una unidad</option>
+          <option value="Kg">Kilogramos</option>
+          <option value="Li">Litros </option>
+          <option value="Gr">Gramos </option>
+          <option value="MG">Miligramos </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="new-stock">Stock Actual</label>
+        <input
+          type="number"
+          id="new-stock"
+          [(ngModel)]="stock.currentStock"
+          placeholder="Ejemplo: 150"
+        />
+      </div>
+      <div class="form-group">
+        <label for="new-minStock">Stock Mínimo</label>
+        <input
+          type="number"
+          id="new-minStock"
+          [(ngModel)]="stock.minimumStock"
+          placeholder="Ejemplo: 50"
+        />
+      </div>
+      <div class="form-actions">
+        <button class="btn-save" (click)="saveStockProduct()">Guardar</button>
+        <button class="btn-cancel" (click)="closeCreateModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de eliminación -->
+  <app-delete-confirmation-modal
+    [show]="showDeleteModal"
+    [itemName]="itemToDelete?.name"
+    (confirm)="confirmDelete()"
+    (cancel)="cancelDelete()">
+  </app-delete-confirmation-modal>
+</div>

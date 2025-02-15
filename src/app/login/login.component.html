@@ -1,0 +1,47 @@
+<div class="login-container">
+    <div class="left-panel">
+        <div class="text-center">
+            <img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*SV8ZFrfvzaHhYzPVBhj40w.jpeg" 
+                 alt="Herramientas de madera" class="rocket">
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <h1>Iniciar sesión</h1>
+
+        <div *ngIf="mensajeError" class="alert alert-danger text-center" role="alert">
+            {{ mensajeError }}
+        </div>
+
+        <form (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+                <label for="usuario" class="form-label">Usuario</label>
+                <input
+                    type="text"  
+                    class="form-control"
+                    id="usuario"
+                    [(ngModel)]="usuario"
+                    name="usuario"
+                    required
+                />
+            </div>
+            <div class="mb-3">
+                <label for="contraseña" class="form-label">Contraseña</label>
+                <input
+                    type="password"
+                    class="form-control"
+                    id="contraseña"
+                    [(ngModel)]="password"
+                    name="contraseña"
+                    required
+                />
+            </div>
+              
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn custom-button">Ingresar</button>
+                        <!-- Sección para el mensaje de error -->
+            </div>
+
+        </form>
+    </div>
+</div>
