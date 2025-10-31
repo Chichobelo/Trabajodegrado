@@ -26,7 +26,7 @@ export class AuthService {
     const login: LoginRequest = { username: username, password: password };
   
     return new Observable(observer => {
-      this.http.post<AuthResponse>(`http://localhost:8080/auth/login`, login).subscribe({
+      this.http.post<AuthResponse>(`http://localhost:9090/auth/login`, login).subscribe({
         next: (response) => {
           if (response && response.token) {
             localStorage.setItem('authToken', response.token); // Guarda el token
@@ -52,7 +52,7 @@ export class AuthService {
    * @returns Observable con la respuesta de autenticación
    */
   register(user: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`http://localhost:8080/auth/register`, user);
+    return this.http.post<AuthResponse>(`http://localhost:9090/auth/register`, user);
   }
 
   /**
@@ -60,11 +60,11 @@ export class AuthService {
    * @returns Observable con la lista de usuarios
    */
   getAllUsers(): Observable<RegisterRequest[]> {
-    return this.http.get<RegisterRequest[]>(`http://localhost:8080/auth`);
+    return this.http.get<RegisterRequest[]>(`http://localhost:9090/auth`);
   }
   getIsValidToken(): Observable<boolean> {
     const token=localStorage.getItem("authToken");
-    return this.http.get<boolean>(`http://localhost:8080/auth/validateToken/${token}`);
+    return this.http.get<boolean>(`http://localhost:9090/auth/validateToken/${token}`);
   }
   /**
    * Obtiene un usuario por su ID.
@@ -82,7 +82,7 @@ export class AuthService {
    * @returns Observable con los datos del usuario actualizado
    */
   updateUser(id: number, user: RegisterRequest): Observable<RegisterRequest> {
-    return this.http.put<RegisterRequest>(`http://localhost:8080/auth/${id}`, user);
+    return this.http.put<RegisterRequest>(`http://localhost:9090/auth/${id}`, user);
   }
 
   /**
@@ -91,7 +91,7 @@ export class AuthService {
    * @returns Observable vacío si la eliminación es exitosa
    */
   deleteUser(id: number): Observable<void> {
-    return this.http.delete<void>(`http://localhost:8080/auth/${id}`);
+    return this.http.delete<void>(`http://localhost:9090/auth/${id}`);
   }
 
   /**

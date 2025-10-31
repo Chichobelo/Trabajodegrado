@@ -13,6 +13,40 @@ h2 {
   text-align: center;
 }
 
+/* Contenedor del botón */
+.actions-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+/* Botón moderno */
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(90deg, #0056b3, #007bff);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 86, 179, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 86, 179, 0.4);
+}
+
+.download-btn .material-icons {
+  font-size: 20px;
+}
+
+/* Filtros */
 .filter-container {
   display: flex;
   justify-content: space-between;
@@ -20,7 +54,6 @@ h2 {
   margin-bottom: 30px;
 }
 
-/* Estilos de los Inputs */
 .search-bar, .date-filter {
   width: 100%;
   padding: 12px;
@@ -37,7 +70,7 @@ h2 {
   outline: none;
 }
 
-/* Personalización de calendario para los inputs de fecha */
+/* Personalización del calendario */
 .date-filter {
   padding-left: 10px;
   padding-right: 10px;
@@ -57,7 +90,7 @@ h2 {
   background-color: #0056b3;
 }
 
-/* Estilo de la Tabla */
+/* Tabla */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -84,7 +117,7 @@ tr:hover {
   background-color: #f1f1f1;
 }
 
-/* Estilo para los Botones de Paginación */
+/* Paginación */
 .pagination-controls {
   display: flex;
   justify-content: center;
@@ -104,7 +137,7 @@ tr:hover {
 }
 
 .pagination-controls button:hover {
-  background-color: #0056b3;
+  background-color: #007bff;
   transform: scale(1.05);
 }
 
@@ -113,7 +146,7 @@ tr:hover {
   cursor: not-allowed;
 }
 
-/* Ajustes Responsivos */
+/* Responsivo */
 @media (max-width: 768px) {
   .filter-container {
     flex-direction: column;
