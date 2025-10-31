@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { Stock } from '../interface/component.model';
 import { ComponentsService } from '../services/component.service';
-import { DeleteConfirmationModalComponent } from './DeleteConfirmationModal.Component'
+import { DeleteConfirmationModalComponent } from './DeleteConfirmationModal.Component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-inventario',
@@ -14,26 +15,17 @@ import { DeleteConfirmationModalComponent } from './DeleteConfirmationModal.Comp
   styleUrls: ['./inventario.component.css']
 })
 export class InventarioComponent implements OnInit {
-  inventory = [
-    { name: 'T1', stock: 100, minStock: 50, unit: 'Gramos' },
-    { name: 'P2', stock: 150, minStock: 75, unit: 'kilogramos' }
-  ];
-
   componentes: any[] = [];
   searchTerm: string = '';
   showDeleteModal = false;
   itemToDelete: any = null;
-
-  // Definir un umbral para considerar el stock como bajo (porcentaje)
-  readonly STOCK_THRESHOLD = 50; // 20% por encima del stock mínimo
-
   selectedItem: Stock = { name: '', quantity: 0, currentStock: '', minimumStock: '', unitOfMeasurement: '' };
   showCreateModal = false;
   stock: Stock = { name: '', quantity: 0, currentStock: '', minimumStock: '', unitOfMeasurement: '' };
   newChemical = { name: '', quantity: '', currentStock: '', minimumStock: '', unitOfMeasurement: '' };
-
   currentPage: number = 1;
   itemsPerPage: number = 4;
+  readonly STOCK_THRESHOLD = 50;
 
   constructor(private componentsService: ComponentsService) {}
 
@@ -80,101 +72,137 @@ export class InventarioComponent implements OnInit {
     this.selectedItem = item;
   }
 
+  /** ✅ Crear un nuevo componente con validaciones y alertas */
   saveStockProduct(): void {
+    if (!this.stock.name || !this.stock.unitOfMeasurement || !this.stock.currentStock || !this.stock.minimumStock) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor completa todos los campos antes de guardar.',
+        confirmButtonColor: '#2162a7'
+      });
+      return;
+    }
+
     this.componentsService.createComponent(this.stock).subscribe(
       (response) => {
-        console.log('Component created:', response);
+        Swal.fire({
+          icon: 'success',
+          title: 'Componente creado',
+          text: 'El componente se registró exitosamente.',
+          showConfirmButton: false,
+          timer: 1500,
+          background: '#f4f7fc'
+        });
         this.closeCreateModal();
         this.fetchComponents();
       },
       (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al crear',
+          text: 'Ocurrió un problema al registrar el componente.',
+          confirmButtonColor: '#d33'
+        });
         console.error('Error creating component:', error);
       }
     );
-    this.closeCreateModal();    
   }
 
+  /** ✅ Actualizar componente con validación y alerta */
   updateStockProduct(): void {
+    if (!this.selectedItem.name || !this.selectedItem.unitOfMeasurement || !this.selectedItem.currentStock || !this.selectedItem.minimumStock) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor completa todos los campos antes de actualizar.',
+        confirmButtonColor: '#2162a7'
+      });
+      return;
+    }
+
     this.componentsService.updateComponent(this.selectedItem.idcomponent, this.selectedItem).subscribe(
       (response) => {
-        console.log('Component updated:', response);
-        this.closeCreateModal();
+        Swal.fire({
+          icon: 'success',
+          title: 'Componente actualizado',
+          text: 'Los datos se actualizaron correctamente.',
+          showConfirmButton: false,
+          timer: 1500,
+          background: '#f4f7fc'
+        });
+        this.closeModal();
         this.fetchComponents();
       },
       (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al actualizar',
+          text: 'No se pudo actualizar el componente.',
+          confirmButtonColor: '#d33'
+        });
         console.error('Error updating component:', error);
       }
     );
-    this.closeModal();    
   }
 
+  /** ✅ Eliminar componente con confirmación */
   deleteStockProduct(item: any): void {
-    this.itemToDelete = item;
-    this.showDeleteModal = true;
+    Swal.fire({
+      title: '¿Eliminar componente?',
+      text: `¿Deseas eliminar "${item.name}" del inventario?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#2162a7',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.componentsService.deleteComponent(item.idcomponent).subscribe(
+          () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Eliminado',
+              text: 'El componente fue eliminado correctamente.',
+              showConfirmButton: false,
+              timer: 1200
+            });
+            this.fetchComponents();
+          },
+          (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al eliminar',
+              text: 'No se pudo eliminar el componente.',
+              confirmButtonColor: '#d33'
+            });
+            console.error('Error deleting component:', error);
+          }
+        );
+      }
+    });
   }
 
-  confirmDelete(): void {
-    if (this.itemToDelete) {
-      this.componentsService.deleteComponent(this.itemToDelete.idcomponent).subscribe(
-        () => {
-          console.log(`Component with ID ${this.itemToDelete.idcomponent} deleted successfully.`);
-          this.fetchComponents();
-          this.showDeleteModal = false;
-          this.itemToDelete = null;
-        },
-        (error) => {
-          console.error('Error deleting component:', error);
-        }
-      );
-    }
-  }
-
-  cancelDelete(): void {
-    this.showDeleteModal = false;
-    this.itemToDelete = null;
-  }
-  
+  /** ✅ Utilidades y helpers */
   closeModal() {
     this.selectedItem = { name: '', quantity: 0, currentStock: '', minimumStock: '', unitOfMeasurement: '' };
   }
 
-  deleteChemical(item: any) {
-    this.inventory = this.inventory.filter(chemical => chemical !== item);
-  }
-
-  addChemical() {
-    console.log(this.stock);
-    if (this.newChemical.name && this.newChemical.quantity) {
-      this.inventory.push({
-        ...this.newChemical,
-        name: '',
-        stock: 0,
-        minStock: 0,
-        unit: ''
-      });
-      this.closeCreateModal();
-    }
-  }
-
   closeCreateModal() {
-    this.newChemical = { name: '', quantity: '', currentStock: '', minimumStock: '', unitOfMeasurement: '' };
+    this.stock = { name: '', quantity: 0, currentStock: '', minimumStock: '', unitOfMeasurement: '' };
     this.showCreateModal = false;
-  }
-
-  resetNewChemical() {
-    this.newChemical = { name: '', quantity: '', currentStock: '', minimumStock: '', unitOfMeasurement: '' };
   }
 
   openCreateModal() {
     this.showCreateModal = true;
-    this.resetNewChemical();
+    this.stock = { name: '', quantity: 0, currentStock: '', minimumStock: '', unitOfMeasurement: '' };
   }
 
   fetchComponents(): void {
     this.componentsService.getComponents().subscribe(
       (data) => {
         this.componentes = data;
-        console.log(this.componentes);
       },
       (error) => {
         console.error('Error fetching components:', error);

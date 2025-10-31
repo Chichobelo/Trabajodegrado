@@ -1,9 +1,8 @@
-<!-- formula.component.html -->
 <div class="container">
-  <!-- Barra de búsqueda -->
-  <div class="header">
-    <h2>Lista de Fórmulas</h2>
-    <div class="search-container">
+  <!-- Header y búsqueda -->
+  <div class="header d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-3 mb-md-0">Gestión de Fórmulas</h2>
+    <div class="search-container w-100 w-md-auto d-flex flex-column flex-md-row align-items-center gap-2">
       <input
         type="text"
         class="form-control search-bar"
@@ -14,145 +13,134 @@
     </div>
   </div>
 
+  <!-- Tabla -->
   <div class="table-container">
-    <table class="table">
-      <thead>
+    <table class="table table-hover align-middle text-center">
+      <thead class="table-primary">
         <tr>
-          <th class="acciones">Producto</th>
-          <th class="acciones">Ingrediente</th>
-          <th class="acciones">Cantidad</th>
-          <th class="acciones">Unidad</th>
-          <th class="acciones">Acciones</th>
+          <th>Producto</th>
+          <th>Ingredientes</th>
+          <th>Cantidad</th>
+          <th>Unidad</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr class="acciones" *ngFor="let formula of formulasPaginadas">
+        <tr *ngFor="let formula of formulasPaginadas">
           <td>{{ formula.nameProducto }}</td>
           <td>
             <ul>
-              <li class="acciones" *ngFor="let ingrediente of formula.ingredientes">
-                {{ ingrediente.name }}
-              </li>
+              <li *ngFor="let ing of formula.ingredientes">{{ ing.name }}</li>
             </ul>
           </td>
           <td>
             <ul>
-              <li class="acciones" *ngFor="let ingrediente of formula.ingredientes">
-                {{ ingrediente.cantidad }}
-              </li>
+              <li *ngFor="let ing of formula.ingredientes">{{ ing.cantidad }}</li>
             </ul>
           </td>
           <td>
             <ul>
-              <li class="acciones" *ngFor="let ingrediente of formula.ingredientes">
-                {{ ingrediente.unidad }}
-              </li>
+              <li *ngFor="let ing of formula.ingredientes">{{ ing.unidad }}</li>
             </ul>
           </td>
-          <td class="acciones">
-            <i 
-              class="fas fa-edit text-primary" 
-              (click)="editarFormula(formula)" 
-              style="cursor: pointer; margin-right: 20px; color: #2162a7;">
-            </i>
-            <i 
-              class="fas fa-trash-alt text-primary" 
-              (click)="eliminarFormula(formula)" 
-              style="cursor: pointer; color: #2162a7;">
-            </i>
+          <td>
+            <i class="fas fa-edit action-icon edit" title="Editar" (click)="editarFormula(formula)"></i>
+            <i class="fas fa-trash-alt action-icon delete" title="Eliminar" (click)="eliminarFormula(formula)"></i>
           </td>
         </tr>
       </tbody>
     </table>
+    <p *ngIf="formulasPaginadas.length === 0" class="text-center text-muted mt-3">
+      No se encontraron fórmulas.
+    </p>
   </div>
-  
-  <div class="pagination-controls">
+
+  <!-- Controles de paginación -->
+  <div class="pagination-controls mt-3">
     <button (click)="irAFormulaAnterior()" [disabled]="currentFormulaIndex === 0">Anterior</button>
-    <button class="over" (click)="irAFormulaSiguiente()" [disabled]="currentFormulaIndex === totalPages - 1">Siguiente</button>
+    <button (click)="irAFormulaSiguiente()" [disabled]="currentFormulaIndex === totalPages - 1">Siguiente</button>
   </div>
-  
 
   <!-- Modal de Creación/Edición -->
   <div class="modal" [class.open]="isModalOpen">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>{{ editingFormulaIndex !== null ? 'Editar' : 'Crear' }} Fórmula</h3>
+        <h3 class="fw-bold">
+          {{ editingFormulaIndex !== null ? 'Editar Fórmula' : 'Crear Nueva Fórmula' }}
+        </h3>
         <button class="close" (click)="cerrarModal()">×</button>
       </div>
-      
+
       <div class="modal-body">
-        <div class="form-group">
-          <label for="producto">Seleccionar Producto</label>
-          <select id="producto" class="form-control" [(ngModel)]="selectedProducto">
-            <option [value]="null" disabled>Selecciona un producto</option>
-            <option *ngFor="let prod of producto" [value]="prod.idproduct">
-              {{ prod.name }}
-            </option>
+        <!-- Selección de producto -->
+        <div class="form-group mb-3">
+          <label for="producto">Producto asociado</label>
+          <select id="producto" class="form-control" [(ngModel)]="selectedProducto" required>
+            <option value="" disabled selected>Selecciona un producto</option>
+            <option *ngFor="let prod of producto" [value]="prod.idproduct">{{ prod.name }}</option>
           </select>
         </div>
-        <h4>Ingredientes</h4>
-        <div class="ingredientes-container" [class.scrollable]="ingredientes.length > 2">
-          <table class="table">
-            <tr *ngFor="let ingrediente of ingredientes; let j = index">
-              <td>
+
+        <h4 class="text-primary mt-4 mb-3 text-center">Ingredientes de la Fórmula</h4>
+
+        <!-- Tabla de ingredientes -->
+        <div class="ingredientes-container" [class.scrollable]="ingredientes.length > 3">
+          <div
+            class="ingrediente-row"
+            *ngFor="let ingrediente of ingredientes; let j = index"
+          >
+            <div class="row g-3 align-items-center mb-2">
+              <div class="col-12 col-md-5">
                 <select class="form-control" [(ngModel)]="ingrediente.nombre">
                   <option [value]="null" disabled>Selecciona un componente</option>
                   <option *ngFor="let componente of componentes" [value]="componente.idcomponent">
                     {{ componente.name }}
                   </option>
                 </select>
-              </td>
-              <td>
+              </div>
+
+              <div class="col-6 col-md-3">
                 <input
+                  type="number"
                   class="form-control"
                   placeholder="Cantidad"
                   [(ngModel)]="ingrediente.cantidad"
+                  min="0"
                 />
-              </td>
-              <td>
-                <select class="form-control" [(ngModel)]="ingrediente.unidad">
-                  <option value="" disabled selected>Unidad de medida</option>
-                  <option value="GR">gramos</option>
-                  <option value="ML">Miligramos</option>
-                  <option value="KG">kilos</option>
-                  <option value="LIT">litros</option>
-                </select>
-              </td>
-              <td>
-                <button class="btn btn-danger btn-sm" (click)="eliminarIngrediente(j)">
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          </table>
-        </div>
-        
+              </div>
 
-        <div class="modal-footer">
-          <button class="btn btn-secondary" (click)="agregarIngrediente()">
+              <div class="col-6 col-md-3">
+                <select class="form-control" [(ngModel)]="ingrediente.unidad">
+                  <option value="" disabled selected>Unidad</option>
+                  <option value="GR">Gramos</option>
+                  <option value="ML">Mililitros</option>
+                  <option value="KG">Kilos</option>
+                  <option value="LIT">Litros</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-1 text-center">
+                <button
+                  class="btn btn-sm btn-danger"
+                  (click)="eliminarIngrediente(j)"
+                  title="Eliminar ingrediente"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="modal-footer d-flex justify-content-between mt-4 flex-wrap">
+          <button class="btn btn-outline-primary" (click)="agregarIngrediente()">
             + Agregar Ingrediente
           </button>
-          <button class="btn btn-primary" (click)="guardarFormula()">
-            Guardar
+          <button class="btn btn-success" (click)="guardarFormula()">
+            Guardar Fórmula
           </button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal de Confirmación de Eliminación -->
-  <div class="modal" [class.open]="isDeleteModalOpen">
-    <div class="modal-content">
-      <div class="modal-header">
-        Confirmar eliminación
-      </div>
-      <div class="modal-body">
-        <p>¿Estás seguro de que deseas eliminar el componente <span class="component-name">"{{ formulaToDelete?.nameProducto }}"</span>?</p>
-        <p class="warning-text">Esta acción no se puede deshacer.</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-cancel" (click)="cerrarModalEliminar()">Cancelar</button>
-        <button class="btn btn-delete" (click)="confirmarEliminacion()">Eliminar</button>
       </div>
     </div>
   </div>

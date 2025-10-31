@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 import { ProductService } from '../services/product.service';
 import { ComponentsService } from '../services/component.service';
 import { Stock } from '../interface/component.model';
@@ -20,28 +21,23 @@ export class FormulaComponent {
   productos: FormulaWithArrayDTO[] = [];
   producto: Product[] = [];
   ingredientes: IngredientDTO[] = [];
-  formula: FormulaWithArrayDTO = {
-    producto: 0,
-    ingredientes: []
-  };
+  formula: FormulaWithArrayDTO = { producto: 0, ingredientes: [] };
 
   isLoading = false;
   errorMessage: string | null = null;
-  selectComponent: string = "";
+  selectComponent: string = '';
   formulas: FormulaWithArrayDTO[] = [];
   selectedProducto?: number;
   editingFormulaIndex: number | null = null;
   isModalOpen = false;
-  isDeleteModalOpen = false;
-  formulaToDelete: FormulaWithArrayDTO | null = null;
   busqueda: string = '';
   componentes: Stock[] = [];
 
-  // Nuevas variables para controlar la navegación de fórmulas
-  currentFormulaIndex: number = 0; // Índice de la fórmula actual
-  itemsPerPage: number = 1;        // Número de fórmulas por página
-  totalPages: number = 0;          // Total de páginas
-  formulasPaginadas: FormulaWithArrayDTO[] = []; // Fórmulas visibles en la página actual
+  // Navegación
+  currentFormulaIndex: number = 0;
+  itemsPerPage: number = 1;
+  totalPages: number = 0;
+  formulasPaginadas: FormulaWithArrayDTO[] = [];
 
   constructor(
     private productService: ProductService,
@@ -55,58 +51,103 @@ export class FormulaComponent {
     this.getRecipe();
   }
 
+  /** 🧩 Cargar productos */
   getProducts() {
+    this.isLoading = true;
     this.productService.getAllProducts().subscribe({
       next: (productos) => {
-        this.producto = productos;
+        this.producto = productos || [];
         this.isLoading = false;
       },
       error: (error) => {
-        this.errorMessage = 'No se pudieron cargar los productos. Intente nuevamente.';
         this.isLoading = false;
-        console.error('Error al cargar productos', error);
-      }
+
+        // Evitar alerta si simplemente no hay productos aún
+        if (error.status === 404 || error.status === 0 || error.status === 500) {
+          this.producto = [];
+          console.warn('⚠️ No se encontraron productos todavía.');
+          return;
+        }
+
+        // Mostrar alerta solo en errores inesperados
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al cargar productos',
+          text: 'Ocurrió un problema inesperado. Intente nuevamente.',
+          confirmButtonColor: '#2162a7',
+        });
+        console.error('Error al cargar productos:', error);
+      },
     });
   }
 
+  /** 🧩 Cargar componentes */
+  getComponents() {
+    this.isLoading = true;
+    this.componentService.getComponents().subscribe({
+      next: (productos) => {
+        this.componentes = productos || [];
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.isLoading = false;
+
+        if (error.status === 404 || error.status === 0 || error.status === 500) {
+          this.componentes = [];
+          console.warn('⚠️ No se encontraron componentes todavía.');
+          return;
+        }
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al cargar componentes',
+          text: 'Ocurrió un problema inesperado. Intente nuevamente.',
+          confirmButtonColor: '#2162a7',
+        });
+        console.error('Error al cargar componentes:', error);
+      },
+    });
+  }
+
+  /** 🧩 Cargar fórmulas */
   getRecipe() {
+    this.isLoading = true;
     this.formulaService.getAllFormulasTransformed().subscribe({
       next: (formulasTransformed) => {
-        this.formulas = formulasTransformed;
+        this.formulas = formulasTransformed || [];
         this.totalPages = Math.ceil(this.formulas.length / this.itemsPerPage);
         this.actualizarFormulasPaginadas();
         this.isLoading = false;
       },
       error: (error) => {
-        this.errorMessage = 'No se pudieron cargar las fórmulas transformadas. Intente nuevamente.';
         this.isLoading = false;
-        console.error('Error al cargar fórmulas transformadas', error);
-      }
-    });
-  }
 
-  getComponents() {
-    this.componentService.getComponents().subscribe({
-      next: (productos) => {
-        this.componentes = productos;
-        this.isLoading = false;
+        if (error.status === 404 || error.status === 0 || error.status === 500) {
+          // No hay fórmulas, no mostrar alerta
+          this.formulas = [];
+          this.totalPages = 0;
+          console.warn('⚠️ No se encontraron fórmulas todavía.');
+          return;
+        }
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al cargar fórmulas',
+          text: 'Ocurrió un problema inesperado. Intente nuevamente.',
+          confirmButtonColor: '#2162a7',
+        });
+        console.error('Error al cargar fórmulas:', error);
       },
-      error: (error) => {
-        this.errorMessage = 'No se pudieron cargar los productos. Intente nuevamente.';
-        this.isLoading = false;
-        console.error('Error al cargar productos', error);
-      }
     });
   }
 
-  // Actualizar las fórmulas visibles según la página actual
+  /** 📄 Paginación */
   actualizarFormulasPaginadas() {
     const startIndex = this.currentFormulaIndex * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     this.formulasPaginadas = this.formulas.slice(startIndex, endIndex);
   }
 
-  // Función para ir a la fórmula anterior
   irAFormulaAnterior() {
     if (this.currentFormulaIndex > 0) {
       this.currentFormulaIndex--;
@@ -114,7 +155,6 @@ export class FormulaComponent {
     }
   }
 
-  // Función para ir a la fórmula siguiente
   irAFormulaSiguiente() {
     if (this.currentFormulaIndex < this.totalPages - 1) {
       this.currentFormulaIndex++;
@@ -122,11 +162,7 @@ export class FormulaComponent {
     }
   }
 
-  // Función para obtener la fórmula actual
-  obtenerFormulaActual() {
-    return this.formulasPaginadas[0]; // Solo se muestra una fórmula por página
-  }
-
+  /** ➕ Modal Crear/Editar */
   abrirModal(isEditMode: boolean = false) {
     this.isModalOpen = true;
     if (!isEditMode) {
@@ -151,55 +187,103 @@ export class FormulaComponent {
     this.ingredientes.splice(index, 1);
   }
 
+  /** 💾 Guardar fórmula */
   guardarFormula() {
-    this.formula.producto = this.selectedProducto != null ? this.selectedProducto : 0;
+    if (!this.selectedProducto) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campo requerido',
+        text: 'Por favor selecciona un producto.',
+        confirmButtonColor: '#2162a7',
+      });
+      return;
+    }
+
+    if (this.ingredientes.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Faltan ingredientes',
+        text: 'Agrega al menos un ingrediente antes de guardar.',
+        confirmButtonColor: '#2162a7',
+      });
+      return;
+    }
+
+    this.formula.producto = this.selectedProducto;
     this.formula.ingredientes = this.ingredientes;
 
+    this.isLoading = true;
     this.formulaService.createFormulaWithIngredients(this.formula).subscribe({
-      next: (response: any) => {
+      next: () => {
+        this.isLoading = false;
         this.cerrarModal();
         this.getRecipe();
+        Swal.fire({
+          icon: 'success',
+          title: 'Fórmula guardada',
+          text: 'La fórmula fue registrada exitosamente.',
+          timer: 1500,
+          showConfirmButton: false,
+        });
       },
-      error: (error: any) => {
-        this.errorMessage = 'No se pudo guardar la fórmula. Intente nuevamente.';
+      error: (error) => {
         this.isLoading = false;
-        console.error('Error al guardar la fórmula', error);
-      }
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al guardar',
+          text: 'No se pudo guardar la fórmula. Intente nuevamente.',
+          confirmButtonColor: '#2162a7',
+        });
+        console.error('Error al guardar fórmula:', error);
+      },
     });
   }
 
-  editarFormula(productos: FormulaWithArrayDTO) {
+  /** ✏️ Editar fórmula */
+  editarFormula(formula: FormulaWithArrayDTO) {
     this.isModalOpen = true;
-    this.selectedProducto = productos.producto;
-    this.ingredientes = productos.ingredientes;
+    this.selectedProducto = formula.producto;
+    this.ingredientes = JSON.parse(JSON.stringify(formula.ingredientes));
   }
 
+  /** 🗑️ Eliminar fórmula */
   eliminarFormula(formula: FormulaWithArrayDTO) {
-    this.formulaToDelete = formula;
-    this.isDeleteModalOpen = true;
-  }
-
-  confirmarEliminacion() {
-    if (this.formulaToDelete) {
-      this.formulaService.deleteFormulasByProductId(this.formulaToDelete.producto).subscribe({
-        next: () => {
-          this.getRecipe();
-          this.cerrarModalEliminar();
-        },
-        error: (error) => {
-          this.errorMessage = 'No se pudo eliminar la fórmula. Intente nuevamente.';
-          console.error('Error al eliminar la fórmula', error);
-        }
-      });
-    }
-  }
-
-  cerrarModalEliminar() {
-    this.isDeleteModalOpen = false;
-    this.formulaToDelete = null;
-  }
-
-  filtrarFormulas() {
-    return this.formulas;
+    Swal.fire({
+      title: '¿Eliminar fórmula?',
+      text: `¿Deseas eliminar la fórmula del producto "${formula.nameProducto}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#2162a7',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isLoading = true;
+        this.formulaService.deleteFormulasByProductId(formula.producto).subscribe({
+          next: () => {
+            this.getRecipe();
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'success',
+              title: 'Eliminado',
+              text: 'La fórmula fue eliminada correctamente.',
+              showConfirmButton: false,
+              timer: 1200,
+            });
+          },
+          error: (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al eliminar',
+              text: 'No se pudo eliminar la fórmula. Intente nuevamente.',
+              confirmButtonColor: '#2162a7',
+            });
+            console.error('Error al eliminar fórmula:', error);
+          },
+        });
+      }
+    });
   }
 }

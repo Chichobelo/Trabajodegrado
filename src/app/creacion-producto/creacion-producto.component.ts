@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Product } from '../interface/product.model';
 import { ProductService } from '../services/product.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-creacion-producto',
@@ -12,24 +13,100 @@ import { ProductService } from '../services/product.service';
   styleUrls: ['./creacion-producto.component.css'],
 })
 export class CreacionProductoComponent implements OnInit {
-  // List of measurement units  
-  // Arrays and main product properties
   productos: Product[] = [];
   nuevoProducto: Product = this.resetProducto();
-  
-  // Filtering and editing properties
+
   filtro: string = ''; 
   editIndex: number | null = null;
   imagenProducto: File | null = null;
-  
-  // Modal and UI state
+
   modalAbierto = false;
   isLoading = false;
   errorMessage: string | null = null;
-  URL: any;
 
-  currentPage: number = 1; // Página actual
-  itemsPerPage: number = 5; // Número de productos por página
+  currentPage: number = 1;
+  itemsPerPage: number = 5;
+
+  constructor(private productService: ProductService) {}
+
+  ngOnInit() {
+    this.cargarProductos();
+  }
+
+  // 🧩 Reinicia el modelo base del producto
+  private resetProducto(): Product {
+    return {
+      name: '',
+      quantity: 0,
+      unitOfMeasurement: '',
+      category: '',
+      imageUrl: ''
+    };
+  }
+
+  // 🧩 Cargar productos desde el servicio
+  cargarProductos() {
+    this.isLoading = true;
+    this.productService.getAllProducts().subscribe({
+      next: (productos) => {
+        this.productos = productos || [];
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.isLoading = false;
+
+        // ⚠️ Si la API devuelve vacío o no hay datos, solo mostramos mensaje en consola
+        if (error.status === 404 || error.status === 0 || error.status === 500) {
+          this.productos = [];
+          console.warn('⚠️ No se encontraron productos todavía.');
+          return;
+        }
+
+        // ⚠️ Solo mostrar alerta en errores reales
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al cargar productos',
+          text: 'Ocurrió un problema inesperado al obtener los productos.',
+          confirmButtonColor: '#2162a7'
+        });
+        console.error('Error al cargar productos:', error);
+      }
+    });
+  }
+
+  // 🧩 Abrir modal (crear o editar)
+  abrirModal(producto?: Product) {
+    if (producto) {
+      this.nuevoProducto = { ...producto };
+      this.editIndex = this.productos.findIndex(p => p.idproduct === producto.idproduct);
+    } else {
+      this.nuevoProducto = this.resetProducto();
+      this.editIndex = null;
+    }
+    this.modalAbierto = true;
+    this.imagenProducto = null;
+  }
+
+  cerrarModal() {
+    this.modalAbierto = false;
+    this.resetForm();
+  }
+
+  private resetForm() {
+    this.nuevoProducto = this.resetProducto();
+    this.editIndex = null;
+    this.imagenProducto = null;
+  }
+
+  // 🧩 Paginación y filtros
+  get productosFiltrados(): Product[] {
+    if (!this.filtro.trim()) {
+      return this.productos;
+    }
+    return this.productos.filter((producto) =>
+      producto.name.toLowerCase().includes(this.filtro.toLowerCase())
+    );
+  }
 
   get paginatedProducts(): Product[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
@@ -47,214 +124,206 @@ export class CreacionProductoComponent implements OnInit {
     }
   }
 
-  constructor(private productService: ProductService) {}
-
-  ngOnInit() {
-    this.cargarProductos();
-  }
-
-  // Reset product to initial state
-  private resetProducto(): Product {
-    return {
-      name: '',
-      quantity: 0,
-      unitOfMeasurement: '',
-      category: '',
-      imageUrl: ''
-    };
-  }
-
-  // Load all products
-  cargarProductos() {
-    this.isLoading = true;
-    this.errorMessage = null;
-
-    this.productService.getAllProducts().subscribe({
-      next: (productos) => {
-        this.productos = productos;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        this.errorMessage = 'No se pudieron cargar los productos. Intente nuevamente.';
-        this.isLoading = false;
-        console.error('Error al cargar productos', error);
-      }
-    });
-  }
-
-  // Open modal for new/edit product
-  abrirModal(producto?: Product) {
-    if (producto) {
-      // Edit existing product
-      this.nuevoProducto = { ...producto };
-      this.editIndex = this.productos.findIndex(p => p.idproduct === producto.idproduct);
-    } else {
-      // New product
-      this.nuevoProducto = this.resetProducto();
-      this.editIndex = null;
-    }
-
-    this.modalAbierto = true;
-    this.imagenProducto = null;
-    this.errorMessage = null;
-  }
-
-  // Close modal
-  cerrarModal() {
-    this.modalAbierto = false;
-    this.resetForm();
-  }
-
-  // Reset form state
-  private resetForm() {
-    this.nuevoProducto = this.resetProducto();
-    this.editIndex = null;
-    this.imagenProducto = null;
-    this.errorMessage = null;
-  }
-
-  // Filtered products getter
-  get productosFiltrados(): Product[] {
-    if (!this.filtro.trim()) {
-      return this.productos;
-    }
-    return this.productos.filter((producto) =>
-      producto.name.toLowerCase().includes(this.filtro.toLowerCase())
-    );
-  }
-
-  private subirImagen(t: number | undefined): Promise<string> {
-    console.log(t)
+  // 🧩 Subir imagen al servidor
+  private subirImagen(id?: number): Promise<string> {
     return new Promise((resolve, reject) => {
-      if (this.imagenProducto) {
-        this.productService.uploadImage(this.imagenProducto, t).subscribe({
-          next: (response) => {
-            resolve(response.imageUrl != null ? response.imageUrl : "");
-          },
+      if (this.imagenProducto && id) {
+        this.productService.uploadImage(this.imagenProducto, id).subscribe({
+          next: (response) => resolve(response.imageUrl || ''),
           error: (error) => {
-            console.error('Error al subir imagen', error);
-            reject('No se pudo subir la imagen');
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al subir imagen',
+              text: 'No se pudo subir la imagen del producto.',
+              confirmButtonColor: '#d33'
+            });
+            reject(error);
           }
         });
       } else {
-        resolve(''); // No image selected
+        resolve('');
       }
     });
   }
 
-  // Save product (create or update)
+  // 🧩 Guardar (crear o actualizar producto)
   async guardarProducto() {
-    // Validate required fields
-    console.log("fsfsdf")
-    if (!this.validateProducto()) {
-      return;
-    }
+    if (!this.validateProducto()) return;
 
     this.isLoading = true;
-    this.errorMessage = null;
+    const fechaActual = new Date();
 
-    try {
-      // Upload image if selected
-
-      const fechaActual = new Date();
-
-      if (this.editIndex !== null && this.nuevoProducto.idproduct) {
-        // Update existing product
-        this.nuevoProducto.updateDate = fechaActual;
-        this.productService.updateProduct(this.nuevoProducto.idproduct, this.nuevoProducto).subscribe({
-          next: () => {
-            this.cargarProductos();
-            this.cerrarModal();
-            this.isLoading = false;
-          },
-          error: (error) => {
-            this.errorMessage = 'No se pudo actualizar el producto. Intente nuevamente.';
-            this.isLoading = false;
-            console.error('Error al actualizar producto', error);
-          }
-        });
-      } else {
-        // Create new product
-        this.nuevoProducto.creationDate = fechaActual;
-        this.productService.createProduct(this.nuevoProducto).subscribe({
-          next: (product) => {
-            this.subirImagen(product.idproduct)
-            this.cargarProductos();
-            this.cerrarModal();
-            this.isLoading = false;
-          },
-          error: (error) => {
-            this.errorMessage = 'No se pudo crear el producto. Intente nuevamente.';
-            this.isLoading = false;
-            console.error('Error al crear producto', error);
-          }
-        });
-      }
-    } catch (error) {
-      this.errorMessage = 'Ocurrió un error en el proceso de guardado.';
-      this.isLoading = false;
-      console.error('Error en el proceso de guardado', error);
-    }
-  }
-
-  // Validate product details before save
-  private validateProducto(): boolean {
-    if (!this.nuevoProducto.name.trim()) {
-      this.errorMessage = 'El nombre del producto es obligatorio';
-      return false;
-    }
-    return true;
-  }
-
-  // Edit product
-  editarProducto(producto: Product) {
-    this.abrirModal(producto);
-  }
-
-  // Delete product
-  eliminarProducto(producto: Product) {
-    if (confirm('¿Estás seguro de que deseas eliminar este producto?') && producto.idproduct) {
-      this.isLoading = true;
-      this.errorMessage = null;
-
-      this.productService.deleteProduct(producto.idproduct).subscribe({
+    if (this.editIndex !== null && this.nuevoProducto.idproduct) {
+      // 🔹 Actualizar producto existente
+      this.nuevoProducto.updateDate = fechaActual;
+      this.productService.updateProduct(this.nuevoProducto.idproduct, this.nuevoProducto).subscribe({
         next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Producto actualizado',
+            text: 'El producto se actualizó correctamente.',
+            showConfirmButton: false,
+            timer: 1500,
+            background: '#f4f7fc'
+          });
           this.cargarProductos();
+          this.cerrarModal();
           this.isLoading = false;
         },
         error: (error) => {
-          this.errorMessage = 'No se pudo eliminar el producto. Intente nuevamente.';
           this.isLoading = false;
-          console.error('Error al eliminar producto', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al actualizar',
+            text: 'No se pudo actualizar el producto.',
+            confirmButtonColor: '#d33'
+          });
+          console.error('Error al actualizar producto', error);
+        }
+      });
+    } else {
+      // 🔹 Crear nuevo producto
+      this.nuevoProducto.creationDate = fechaActual;
+      this.productService.createProduct(this.nuevoProducto).subscribe({
+        next: async (product) => {
+          await this.subirImagen(product.idproduct);
+          Swal.fire({
+            icon: 'success',
+            title: 'Producto creado',
+            text: 'El producto fue registrado exitosamente.',
+            showConfirmButton: false,
+            timer: 1500,
+            background: '#f4f7fc'
+          });
+          this.cargarProductos();
+          this.cerrarModal();
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.isLoading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al crear',
+            text: 'No se pudo crear el producto. Intente nuevamente.',
+            confirmButtonColor: '#d33'
+          });
+          console.error('Error al crear producto', error);
         }
       });
     }
   }
 
+  // 🧩 Validaciones de campos
+  private validateProducto(): boolean {
+    if (!this.nuevoProducto.name?.trim()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campo requerido',
+        text: 'El nombre del producto es obligatorio.',
+        confirmButtonColor: '#2162a7'
+      });
+      return false;
+    }
 
+    if (!this.nuevoProducto.category?.trim()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campo requerido',
+        text: 'Por favor selecciona una categoría.',
+        confirmButtonColor: '#2162a7'
+      });
+      return false;
+    }
 
-  
+    return true;
+  }
 
-  // Image selection handler
+  // 🧩 Editar producto existente
+  editarProducto(producto: Product) {
+    this.abrirModal(producto);
+  }
+
+  // 🧩 Eliminar producto con confirmación
+  eliminarProducto(producto: Product) {
+    if (!producto.idproduct) return;
+
+    Swal.fire({
+      title: '¿Eliminar producto?',
+      text: `¿Deseas eliminar "${producto.name}" del sistema?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#2162a7'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (!producto.idproduct) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'El producto seleccionado no tiene un ID válido.',
+            confirmButtonColor: '#d33'
+          });
+          return;
+        }
+
+        this.isLoading = true;
+        this.productService.deleteProduct(producto.idproduct!).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Eliminado',
+              text: 'El producto fue eliminado correctamente.',
+              showConfirmButton: false,
+              timer: 1200
+            });
+            this.cargarProductos();
+            this.isLoading = false;
+          },
+          error: (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al eliminar',
+              text: 'No se pudo eliminar el producto.',
+              confirmButtonColor: '#d33'
+            });
+            console.error('Error al eliminar producto', error);
+          }
+        });
+      }
+    });
+  }
+
+  // 🧩 Seleccionar imagen con validación
   seleccionarImagen(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
-      // Validate file type and size
-      const maxSize = 5 * 1024 * 1024; // 5MB
+      const maxSize = 5 * 1024 * 1024;
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
       if (!allowedTypes.includes(file.type)) {
-        this.errorMessage = 'Solo se permiten imágenes (JPEG, PNG, GIF)';
+        Swal.fire({
+          icon: 'warning',
+          title: 'Formato no permitido',
+          text: 'Solo se permiten imágenes (JPEG, PNG o GIF).',
+          confirmButtonColor: '#2162a7'
+        });
         return;
       }
 
       if (file.size > maxSize) {
-        this.errorMessage = 'La imagen no debe superar los 5MB';
+        Swal.fire({
+          icon: 'warning',
+          title: 'Archivo muy grande',
+          text: 'La imagen no debe superar los 5MB.',
+          confirmButtonColor: '#2162a7'
+        });
         return;
       }
 
       this.imagenProducto = file;
-      this.errorMessage = null;
     }
   }
 }

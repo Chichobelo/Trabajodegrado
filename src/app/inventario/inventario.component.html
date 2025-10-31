@@ -28,31 +28,40 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="acciones" *ngFor="let item of paginatedComponents">
-          <td>{{ item.name }}</td>
-          <td>{{ item.currentStock }}</td>
-          <td>{{ item.unitOfMeasurement }}</td>
-          <td>{{ item.minimumStock }}</td>
-          <td class="status">
-            <span [ngClass]="getStatusColor(getStockStatus(item.currentStock, item.minimumStock))">
-              {{ getStockStatus(item.currentStock, item.minimumStock) | titlecase }}
-            </span>
-          </td>
-          <td>
-            <i 
-            class="fas fa-edit" 
-            (click)="editStock(item)" 
-            style="cursor: pointer; margin-right: 20px; color: #2162a7;">
-          </i>
-          <i 
-            class="fas fa-trash-alt" 
-            (click)="deleteStockProduct(item)" 
-            style="cursor: pointer; color: #2162a7;">
-          </i>
-          
-          </td>
-        </tr>
-      </tbody>
+  <!-- Si hay resultados -->
+  <tr *ngFor="let item of paginatedComponents" class="acciones">
+    <td>{{ item.name }}</td>
+    <td>{{ item.currentStock }}</td>
+    <td>{{ item.unitOfMeasurement }}</td>
+    <td>{{ item.minimumStock }}</td>
+    <td class="status">
+      <span [ngClass]="getStatusColor(getStockStatus(item.currentStock, item.minimumStock))">
+        {{ getStockStatus(item.currentStock, item.minimumStock) | titlecase }}
+      </span>
+    </td>
+    <td>
+      <i 
+        class="fas fa-edit" 
+        (click)="editStock(item)" 
+        style="cursor: pointer; margin-right: 20px; color: #2162a7;">
+      </i>
+      <i 
+        class="fas fa-trash-alt" 
+        (click)="deleteStockProduct(item)" 
+        style="cursor: pointer; color: #2162a7;">
+      </i>
+    </td>
+  </tr>
+
+  <!-- Si no hay resultados -->
+  <tr *ngIf="paginatedComponents.length === 0">
+    <td colspan="6" class="no-results">
+      <i class="fas fa-search-minus"></i>
+      <p>No se encontraron resultados para "{{ searchTerm }}"</p>
+    </td>
+  </tr>
+</tbody>
+
     </table>
     
     <div class="pagination-container mt-3" *ngIf="totalPages > 1">
@@ -170,10 +179,10 @@
   </div>
 
   <!-- Modal de confirmación de eliminación -->
-  <app-delete-confirmation-modal
+   <!-- <app-delete-confirmation-modal
     [show]="showDeleteModal"
     [itemName]="itemToDelete?.name"
     (confirm)="confirmDelete()"
     (cancel)="cancelDelete()">
   </app-delete-confirmation-modal>
-</div>
+</div> -->

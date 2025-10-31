@@ -127,19 +127,5 @@
   </div>
 
   <!-- Modal de confirmación de eliminación -->
-  <div class="modal" *ngIf="showDeleteModal">
-    <div class="modal-content delete-confirmation">
-      <div class="modal-header">
-        <h3>Confirmar Eliminación</h3>
-      </div>
-      <div class="modal-body">
-        <p>¿Estás seguro de eliminar este trabajador?</p>
-        <p class="user-info">{{ userToDelete?.firstname }} {{ userToDelete?.lastname }}</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn cancel-btn" (click)="cancelDelete()">Cancelar</button>
-        <button class="btn delete-btn" (click)="confirmDelete()">Eliminar</button>
-      </div>
-    </div>
-  </div>
+  
 </div>
